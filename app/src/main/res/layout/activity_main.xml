@@ -1,0 +1,62 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:id="@+id/main_layout">
+
+    <Switch
+        android:id="@+id/switch_dynamic_refresh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Dinamik Yenileme Hızı"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp" />
+
+    <Switch
+        android:id="@+id/switch_night_mode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Gece Modu"
+        android:layout_below="@id/switch_dynamic_refresh"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp" />
+
+    <Switch
+        android:id="@+id/switch_brightness"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mavi Işık Filtresi"
+        android:layout_below="@id/switch_night_mode"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp" />
+
+    <SeekBar
+        android:id="@+id/beyazDengeSeekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/switch_brightness"
+        android:layout_marginTop="48dp"
+        android:max="100"
+        android:enabled="false" />
+
+    <TextView
+        android:id="@+id/text_permission_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Uygulamanın tüm işlevlerini kullanabilmeniz için gerekli izinleri vermeniz gerekmektedir."
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/beyazDengeSeekBar"
+        android:layout_marginTop="30dp"
+        android:visibility="visible"/>
+
+    <Button
+        android:id="@+id/button_request_permissions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="İzinleri Ver"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/text_permission_info"
+        android:layout_marginTop="20dp"
+        android:visibility="visible"/>
+</RelativeLayout>

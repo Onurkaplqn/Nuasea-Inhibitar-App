@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">MotionSicknessKiller</string>
+    <string name="accessibility_service_description">Motion Sickness Killer Erişilebilirlik Servisi</string>
+
+</resources>

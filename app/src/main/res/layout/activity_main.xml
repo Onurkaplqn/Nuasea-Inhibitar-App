@@ -32,13 +32,13 @@
         android:layout_marginTop="20dp" />
 
     <SeekBar
-        android:id="@+id/beyazDengeSeekBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/switch_brightness"
-        android:layout_marginTop="48dp"
-        android:max="100"
-        android:enabled="false" />
+    android:id="@+id/beyazDengeSeekBar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/switch_brightness"
+    android:layout_marginTop="48dp"
+    android:max="100"
+    android:enabled="false" />
 
     <TextView
         android:id="@+id/text_permission_info"

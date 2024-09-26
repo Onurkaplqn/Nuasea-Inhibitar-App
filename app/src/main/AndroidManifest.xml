@@ -32,6 +32,13 @@
             </intent-filter>
         </activity>
 
+        <!-- Splash Screen Activity -->
+        <activity
+            android:name=".SplashActivity"
+            android:exported="true">
+
+        </activity>
+
         <!-- Erişilebilirlik servisi tanımı -->
         <service
             android:name=".MyAccessibilityService"

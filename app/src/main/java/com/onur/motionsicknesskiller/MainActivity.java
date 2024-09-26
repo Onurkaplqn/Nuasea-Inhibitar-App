@@ -260,7 +260,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (sensorManager != null) {
             sensorManager.unregisterListener(this);
         }
-        removeOverlayView();
+
     }
     @Override
     protected void onDestroy() {

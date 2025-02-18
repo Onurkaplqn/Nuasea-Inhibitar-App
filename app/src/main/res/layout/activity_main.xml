@@ -1,62 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:id="@+id/main_layout">
+    android:background="@color/background_purple_light"
+    tools:context=".MainActivity">
 
-    <Switch
-        android:id="@+id/switch_dynamic_refresh"
+    <!-- Motion Visualizer View -->
+    <com.onur.motionsicknesskiller.motion.MotionVisualizerView
+        android:id="@+id/motion_visualizer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- Üst Bar -->
+    <RelativeLayout
+        android:id="@+id/top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Sol taraftaki hesap ikonu -->
+        <ImageView
+            android:id="@+id/account_image"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/circle_background"
+            android:padding="8dp"
+            android:src="@drawable/ic_account"
+            android:clickable="true"
+            android:focusable="true" />
+
+    </RelativeLayout>
+
+    <!-- Karşılama Mesajı -->
+    <TextView
+        android:id="@+id/welcome_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Dinamik Yenileme Hızı"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp" />
+        android:layout_below="@id/top_bar"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:text="Hey 👋"
+        android:textColor="@color/text_dark"
+        android:textSize="24sp"
+        android:textStyle="bold" />
 
-    <Switch
-        android:id="@+id/switch_night_mode"
-        android:layout_width="wrap_content"
+    <!-- Ana İşlevler Bölümü -->
+    <RelativeLayout
+        android:id="@+id/main_functions"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Gece Modu"
-        android:layout_below="@id/switch_dynamic_refresh"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp" />
+        android:layout_below="@id/welcome_message"
+        android:layout_marginTop="24dp"
+        android:padding="16dp">
 
-    <Switch
-        android:id="@+id/switch_brightness"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Mavi Işık Filtresi"
-        android:layout_below="@id/switch_night_mode"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp" />
+        <!-- Dinamik Yenileme Switch -->
+        <Switch
+            android:id="@+id/switch_dynamic_refresh"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/switch_background"
+            android:padding="16dp"
+            android:text="Dinamik Yenileme"
+            android:textColor="@color/text_dark"
+            android:textSize="16sp" />
 
-    <SeekBar
-    android:id="@+id/beyazDengeSeekBar"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_below="@id/switch_brightness"
-    android:layout_marginTop="48dp"
-    android:max="100"
-    android:enabled="false" />
+        <!-- Slider ve FPS Text -->
+        <com.google.android.material.slider.Slider
+            android:id="@+id/refresh_rate_slider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/switch_dynamic_refresh"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:visibility="gone" />
 
+        <TextView
+            android:id="@+id/refresh_rate_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/refresh_rate_slider"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="4dp"
+            android:text="60 FPS"
+            android:textColor="@color/text_dark"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:visibility="gone" />
+
+        <!-- Gece Modu Switch -->
+        <Switch
+            android:id="@+id/switch_night_mode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/refresh_rate_text"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/switch_background"
+            android:padding="16dp"
+            android:text="Gece Modu"
+            android:textColor="@color/text_dark"
+            android:textSize="16sp" />
+
+        <!-- Gece Modu Slider -->
+        <com.google.android.material.slider.Slider
+            android:id="@+id/night_mode_slider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/switch_night_mode"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"
+            android:theme="@style/CustomSliderStyle" />
+
+        <!-- Parlaklık Switch -->
+        <Switch
+            android:id="@+id/switch_brightness"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/night_mode_slider"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/switch_background"
+            android:padding="16dp"
+            android:text="Parlaklık"
+            android:textColor="@color/text_dark"
+            android:textSize="16sp" />
+
+        <!-- Parlaklık Slider -->
+        <com.google.android.material.slider.Slider
+            android:id="@+id/beyazDengeSeekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/switch_brightness"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:visibility="gone" />
+
+        <!-- Motion Visualizer Switch -->
+        <Switch
+            android:id="@+id/switch_motion_visualizer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/beyazDengeSeekBar"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/switch_background"
+            android:padding="16dp"
+            android:text="Hareket Görselleştirici"
+            android:textColor="@color/text_dark"
+            android:textSize="16sp" />
+    </RelativeLayout>
+
+    <!-- İzin Bilgisi ve Buton -->
     <TextView
         android:id="@+id/text_permission_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Uygulamanın tüm işlevlerini kullanabilmeniz için gerekli izinleri vermeniz gerekmektedir."
+        android:layout_below="@id/main_functions"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/beyazDengeSeekBar"
-        android:layout_marginTop="30dp"
-        android:visibility="visible"/>
+        android:layout_marginTop="16dp"
+        android:text="İzin Bilgisi"
+        android:textColor="@color/text_dark" />
 
     <Button
         android:id="@+id/button_request_permissions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="İzinleri Ver"
-        android:layout_centerHorizontal="true"
         android:layout_below="@id/text_permission_info"
-        android:layout_marginTop="20dp"
-        android:visibility="visible"/>
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:text="İzinleri İste" />
+
+    <!-- Alt Menü -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white"
+        android:elevation="8dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/icon_home"
+            android:layout_width="0dp"
+            android:layout_height="24dp"
+            android:layout_weight="1"
+            android:src="@drawable/home" />
+
+        <ImageView
+            android:id="@+id/icon_settings"
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_weight="1"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ss"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Buy Me a Coffee" />
+
+        <ImageView
+            android:id="@+id/icon_profile"
+            android:layout_width="0dp"
+            android:layout_height="24dp"
+            android:layout_weight="1"
+            android:src="@drawable/reference" />
+    </LinearLayout>
+
 </RelativeLayout>

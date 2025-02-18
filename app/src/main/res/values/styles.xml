@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.MotionSicknessKiller.FullScreen" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+        <item name="android:navigationBarColor">@color/white</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="sliderStyle">@style/CustomSliderStyle</item>
+    </style>
+
+    <!-- Slider Stili -->
+    <style name="CustomSliderStyle" parent="Widget.MaterialComponents.Slider">
+        <item name="trackHeight">2dp</item>
+        <item name="haloRadius">16dp</item>
+        <item name="thumbRadius">6dp</item>
+        <item name="labelBehavior">floating</item>
+        <item name="tickVisible">false</item>
+        <item name="trackColorActive">@color/slider_active</item>
+        <item name="trackColorInactive">@color/slider_inactive</item>
+        <item name="thumbColor">@color/slider_active</item>
+        <item name="thumbElevation">2dp</item>
+        <item name="thumbStrokeWidth">2dp</item>
+        <item name="thumbStrokeColor">@color/white</item>
+    </style>
+
+    <style name="SliderTooltipStyle" parent="Widget.MaterialComponents.Tooltip">
+        <item name="android:textColor">@color/white</item>
+        <item name="backgroundTint">#FF4444</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+</resources> 

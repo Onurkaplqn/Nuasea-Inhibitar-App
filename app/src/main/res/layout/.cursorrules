@@ -1,0 +1,69 @@
+# Proje Arka Planı
+Bu proje, Android Studio kullanılarak Java dilinde geliştirilen bir mobil uygulamadır. MVVM mimarisi ve Android Jetpack bileşenleri (LiveData, ViewModel, Room) temel alınmıştır. Uygulama, kullanıcı dostu bir arayüz ve offline özellikler sunmayı hedefler :cite[1]:cite[3].
+
+# Kodlama Standartları
+- Sınıf ve metod isimleri PascalCase/camelCase kurallarına uymalı.
+- Deprecated Android API'ler kullanılmamalı (örneğin, AsyncTask yerine Coroutine veya WorkManager).
+- XML layout dosyalarında view binding kullanılmalı.
+- Activity/Fragment yaşam döngüsü yönetimi dikkate alınmalı (örneğin, bellek sızıntılarını önlemek için WeakReference).
+- Google'ın resmi Android geliştirme kılavuzuna uyulmalı :cite[3]:cite[8].
+
+# Tercih Edilen Kütüphaneler
+- Ağ İşlemleri: Retrofit + OkHttp
+- Veritabanı: Room
+- Görsel Yükleme: Glide veya Picasso
+- Dependency Injection: Hilt
+- Arka Plan İşlemleri: Kotlin Coroutines veya WorkManager
+- Test: JUnit, Espresso, Mockito :cite[3]:cite[6].
+
+# Dosya Yapısı
+- src/main/java: Paket yapısı `com.[proje_adi].feature` şeklinde olmalı (örneğin, `com.example.app.login`).
+- res/layout: XML dosyaları `activity_`, `fragment_`, `item_` önekleriyle adlandırılmalı.
+- res/values: strings.xml, colors.xml, ve styles.xml tutarlı bir şekilde yönetilmeli.
+- build.gradle: Bağımlılıklar sürümleri `versions.gradle` dosyasında merkezileştirilmeli :cite[1]:cite[8].
+
+# Performans Optimizasyonu
+- UI thread'de uzun süren işlemler yapılmamalı.
+- RecyclerView'da ViewHolder pattern kullanılmalı.
+- ProGuard/R8 ile kod ve kaynak küçültme etkinleştirilmeli.
+- Bellek sızıntılarını tespit etmek için LeakCanary entegre edilmeli :cite[5]:cite[8].
+- Kod tekrarlarını(dublicate logic) ortadan kaldır.Proje genelinde ortak fonksiyonlar veya bileşenler oluştur.
+
+# Test Gereksinimleri
+- Unit testler `src/test/java` altında JUnit ile yazılmalı.
+- UI testler `src/androidTest/java` altında Espresso kullanılmalı.
+- Mockito ile bağımlılıklar mock'lanmalı.
+- Test kapsamı en az %70 olmalı :cite[1]:cite[3].
+
+# Dokümantasyon
+- Tüm public metodlar ve sınıflar Javadoc ile açıklanmalı.
+- Her modül için `README.md` dosyası oluşturulmalı.
+- Proje kök dizininde `ARCHITECTURE.md` ile mimari detaylar paylaşılmalı :cite[3]:cite[5].
+
+# Hata Yönetimi
+- Tüm ağ çağrıları try-catch bloklarıyla sarılmalı.
+- Crashlytics ile crash raporlama entegre edilmeli.
+- Global exception handler ile beklenmeyen hatalar loglanmalı :cite[1]:cite[8].
+- "NetworkOnMainThreadException" hatası alınırsa: Coroutine veya WorkManager öner.  
+- "NullPointerException" için: `@Nullable` annotation ve null-safety kontrolü ekle. 
+
+# Custom Linter Kuralları
+- findViewById() kullanımı otomatik reddedilsin, ViewBinding teşvik edilsin.  
+- UI thread'de 100ms'den uzun süren işlemler için uyarı verilsin.  
+
+# Gradle Optimizasyonu
+- Sürümler `libs.versions.toml` dosyasında tanımlanmalı (Gradle 7.0+ önerilir).  
+- Modüller arası bağımlılıklar `api`/`implementation` ayrımına dikkat edilmeli.  
+
+# Otomatik Template Üretimi
+- Yeni bir Activity oluşturulduğunda: MVVM yapısı (Activity + ViewModel + Repository) otomatik oluşturulsun.  
+- Yeni bir Fragment için: Lifecycle-aware data observation kodu eklenmeli.  
+
+# Güvenlik Politikaları
+- Tüm ağ istekleri HTTPS ile yapılmalı (OkHttp: Certificate Pinning etkinleştirilmeli).  
+- SharedPreferences yerine EncryptedSharedPreferences kullanılmalı.  
+- Logcat'te hassas veriler (token, email) filtrelenmeli.
+
+#Politikalar
+-Eğer eklenmesi gereken bir kütüphane varsa ekle
+-Eğer eklenmesi gereken bir bağımlılık varsa ilk önce bunu ekle

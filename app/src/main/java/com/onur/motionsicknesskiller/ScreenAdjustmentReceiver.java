@@ -4,35 +4,49 @@ package com.onur.motionsicknesskiller;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.view.View;
-import android.view.WindowManager;
+import android.provider.Settings;
+import android.widget.Toast;
 
 public class ScreenAdjustmentReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        MainActivity mainActivity = (MainActivity) context;
+        String action = intent.getAction();
+        if (action != null) {
+            switch (action) {
+                case "ADJUST_BRIGHTNESS":
+                    try {
+                        // Sistem ayarlarını değiştirme izni kontrolü
+                        if (Settings.System.canWrite(context)) {
+                            // Mevcut parlaklık değerini al
+                            int currentBrightness = Settings.System.getInt(
+                                    context.getContentResolver(),
+                                    Settings.System.SCREEN_BRIGHTNESS
+                            );
+                            
+                            // Parlaklığı değiştir (örnek olarak %50)
+                            int newBrightness = Math.min(255, currentBrightness + 25);
+                            Settings.System.putInt(
+                                    context.getContentResolver(),
+                                    Settings.System.SCREEN_BRIGHTNESS,
+                                    newBrightness
+                            );
+                            
+                            Toast.makeText(context, "Parlaklık ayarlandı", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(context, "Sistem ayarları izni gerekli", Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (Settings.SettingNotFoundException e) {
+                        Toast.makeText(context, "Parlaklık ayarlanamadı", Toast.LENGTH_SHORT).show();
+                    }
+                    break;
 
-        // Parlaklık ayarını yap
-        if ("ADJUST_BRIGHTNESS".equals(intent.getAction())) {
-            adjustBrightness(mainActivity);
+                case "ADJUST_FILTER":
+                    // Mavi ışık filtresi ayarları
+                    Intent filterIntent = new Intent(context, MainActivity.class);
+                    filterIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(filterIntent);
+                    break;
+            }
         }
-        // Mavi ışık filtresi ayarını yap
-        else if ("ADJUST_FILTER".equals(intent.getAction())) {
-            adjustBlueLightFilter(mainActivity);
-        }
-    }
-
-    private void adjustBrightness(MainActivity mainActivity) {
-        WindowManager.LayoutParams layoutParams = mainActivity.getWindow().getAttributes();
-        layoutParams.screenBrightness = layoutParams.screenBrightness == 1.0f ? 0.5f : 1.0f; // 0.0 - 1.0 arası değer
-        mainActivity.getWindow().setAttributes(layoutParams);
-    }
-
-    private void adjustBlueLightFilter(MainActivity mainActivity) {
-        View overlayView = mainActivity.getOverlayView();
-        int currentAlpha = overlayView.getBackground().getAlpha();
-        int newAlpha = currentAlpha == 255 ? 100 : 255;
-        overlayView.setBackgroundColor(Color.argb(newAlpha, 255, 100, 0)); // Transparan turuncu renk
     }
 }

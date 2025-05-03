@@ -67,3 +67,5 @@ Bu proje, Android Studio kullanılarak Java dilinde geliştirilen bir mobil uygu
 #Politikalar
 -Eğer eklenmesi gereken bir kütüphane varsa ekle
 -Eğer eklenmesi gereken bir bağımlılık varsa ilk önce bunu ekle
+-Proje derleme gibi android Studio üzerinden yapılacak şeyleri bana belirt kendin powershell üzerinden yapma.
+-Terminal olarak git bash kullan.

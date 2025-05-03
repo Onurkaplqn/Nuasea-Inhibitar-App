@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    tools:context=".MotionControlActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light"
+            app:titleTextColor="@android:color/white" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Bilgi Kartı -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="10dp">
+
+                        <TextView
+                            android:id="@+id/info_detail"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/info_background"
+                            android:padding="12dp"
+                            android:textColor="@color/white"
+                            android:textSize="16sp"
+                            android:layout_marginTop="20dp"
+                            app:layout_constraintTop_toBottomOf="@id/info_title"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            android:layout_marginBottom="0dp"
+                            tools:text="Bu sayfada hareket hastalığını önlemeye yönelik özelliklerle ilgili bilimsel açıklamalar bulabilirsiniz." />
+
+                        <TextView
+                            android:id="@+id/info_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/title_background"
+                            android:elevation="4dp"
+                            android:paddingStart="20dp"
+                            android:paddingTop="6dp"
+                            android:paddingEnd="20dp"
+                            android:paddingBottom="6dp"
+                            android:textAppearance="?attr/textAppearanceHeadline6"
+                            android:textColor="@color/white"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="0dp"
+                            android:layout_marginTop="0dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            tools:text="Hareket Hastalığı Kontrol Özellikleri" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+            <!-- Özellik Butonları -->
+            <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Özellikler"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:textStyle="bold"
+                android:textSize="18sp" />
+
+            <!-- Hareket Görselleştirici Butonu -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/motion_visualizer_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="1dp"
+                app:rippleColor="?attr/colorControlHighlight">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="16dp"
+                        android:contentDescription="Hareket Görselleştirici İkonu"
+                        android:src="@drawable/ic_compass" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Hareket Görselleştirici"
+                        android:textAppearance="?attr/textAppearanceBody1"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Ekran Yenileme Hızı Butonu -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/refresh_rate_button"
+                android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="1dp"
+                app:rippleColor="?attr/colorControlHighlight">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="16dp"
+                        android:contentDescription="Ekran Yenileme Hızı İkonu"
+                        android:src="@drawable/ic_refresh" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Ekran Yenileme Hızı"
+                        android:textAppearance="?attr/textAppearanceBody1"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+            <!-- Gece Modu Butonu -->
+        <com.google.android.material.card.MaterialCardView
+                android:id="@+id/night_mode_button"
+                android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="1dp"
+                app:rippleColor="?attr/colorControlHighlight">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="16dp"
+                        android:contentDescription="Gece Modu İkonu"
+                        android:src="@drawable/ic_night_mode" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Gece Modu"
+                        android:textAppearance="?attr/textAppearanceBody1"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+            <!-- Mavi Işık Filtresi Butonu -->
+        <com.google.android.material.card.MaterialCardView
+                android:id="@+id/blue_light_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="1dp"
+                app:rippleColor="?attr/colorControlHighlight">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="16dp"
+                        android:contentDescription="Mavi Işık Filtresi İkonu"
+                        android:src="@drawable/ic_blue_light" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Mavi Işık Filtresi"
+                        android:textAppearance="?attr/textAppearanceBody1"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+            <!-- Ana Sayfaya Dön Butonu -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_home"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+                android:padding="12dp"
+                android:text="Ana Sayfaya Dön"
+                app:icon="@drawable/ic_home"
+                app:iconGravity="textStart"
+                android:textSize="16sp"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+        </LinearLayout>
+</androidx.core.widget.NestedScrollView> 
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout> 

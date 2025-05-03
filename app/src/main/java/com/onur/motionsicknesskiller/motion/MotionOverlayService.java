@@ -28,7 +28,13 @@ public class MotionOverlayService extends Service implements MotionSensorManager
         
         // Window manager ve overlay view başlat
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-        overlayView = new MotionVisualizerView(this, null);
+        overlayView = new MotionVisualizerView(this, null) {
+            @Override
+            public boolean onTouchEvent(android.view.MotionEvent event) {
+                // Dokunma olaylarını tüketme, alttaki uygulamalara geçmesini sağla
+                return false;
+            }
+        };
         
         // Sensör yöneticisini başlat
         motionSensorManager = new MotionSensorManager(this, this);

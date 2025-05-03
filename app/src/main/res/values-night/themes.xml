@@ -2,6 +2,19 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.MotionSicknessKiller" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <item name="colorPrimary">@color/purple_200</item>
+        <item name="colorPrimaryDark">@color/purple_700</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorSurface">#212121</item>
+        <item name="colorOnSurface">@color/white</item>
+        <item name="materialCardViewStyle">@style/CustomCardStyle.Dark</item>
+    </style>
+    
+    <style name="CustomCardStyle.Dark" parent="Widget.MaterialComponents.CardView">
+        <item name="cardElevation">4dp</item>
+        <item name="cardCornerRadius">16dp</item>
+        <item name="rippleColor">@color/purple_200</item>
+        <item name="cardBackgroundColor">#333333</item>
     </style>
 </resources>

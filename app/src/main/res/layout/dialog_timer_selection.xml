@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_rounded_dialog"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/title_timer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="8dp"
+        android:text="Zamanlayıcı Ayarla"
+        android:textColor="@color/relaxation_text_dark"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="16dp"
+        android:background="#E0E0E0" />
+
+    <!-- Zamanlayıcı Seçenekleri -->
+    <RadioGroup
+        android:id="@+id/timer_radio_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/radio_off"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="Kapalı"
+            android:textColor="@color/relaxation_text_dark" />
+
+        <RadioButton
+            android:id="@+id/radio_15min"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="15 dakika"
+            android:textColor="@color/relaxation_text_dark" />
+
+        <RadioButton
+            android:id="@+id/radio_30min"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:padding="8dp"
+            android:text="30 dakika"
+            android:textColor="@color/relaxation_text_dark" />
+
+        <RadioButton
+            android:id="@+id/radio_45min"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="45 dakika"
+            android:textColor="@color/relaxation_text_dark" />
+
+        <RadioButton
+            android:id="@+id/radio_1hour"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="1 saat"
+            android:textColor="@color/relaxation_text_dark" />
+
+        <RadioButton
+            android:id="@+id/radio_2hour"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="2 saat"
+            android:textColor="@color/relaxation_text_dark" />
+    </RadioGroup>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="end"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_cancel"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="İptal"
+            android:textColor="@color/relaxation_accent_color" />
+
+        <Button
+            android:id="@+id/btn_ok"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tamam"
+            android:textColor="@color/relaxation_accent_color" />
+    </LinearLayout>
+
+</LinearLayout> 

@@ -1,0 +1,256 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# CURSOR RULES: Android Development Guide 
+
+## 1. Code Organization and Architecture
+
+### Architectural Principles
+- Use **MVVM (Model-View-ViewModel)** architecture
+- Create a separate ViewModel for each screen
+- Keep all business logic in the ViewModels
+- Strictly separate UI and business logic
+- Use Dagger or Hilt for dependency injection
+
+### Package Structure
+- Organize packages on a feature basis (feature-based packaging)
+- Each feature should contain its own View, ViewModel, Repository, and model classes
+- Create `common`, `core`, or `shared` packages for commonly used components
+
+### File Organization
+- Group source files according to their purpose
+- Each Java class should have a single responsibility (Single Responsibility Principle)
+- Do not exceed 500 lines of code per class; if it does, split the class
+- MainActivity or Fragments should only contain UI logic, not business logic
+
+---
+
+## 2. Code Writing Rules
+
+### Naming Conventions
+- **Classes**: PascalCase (e.g., `MainActivity`, `UserViewModel`)
+- **Methods**: camelCase (e.g., `onCreate()`, `getUserData()`)
+- **Variables**: camelCase (e.g., `userName`, `isLoggedIn`)
+- **Constants**: UPPER_SNAKE_CASE (e.g., `API_BASE_URL`, `MAX_RETRY_COUNT`)
+- **Layout files**: snake_case (e.g., `activity_main.xml`, `item_user.xml`)
+- **IDs**: snake_case (e.g., `user_name_text`, `login_button`)
+
+### Code Formatting
+- Use 4 spaces for indentation
+- Each line should not exceed 100 characters
+- Leave one blank line between methods in Java files
+- Closing braces (`}`) should always be on their own line
+
+### Comments
+- Add explanatory comments for complex logic
+- Use Javadoc comments for classes and public methods
+- Use TODO, FIXME markers, but clean them up later
+
+---
+
+## 3. Performance Optimization
+
+### UI Performance
+- Do not perform heavy operations on the main thread
+- Use CoroutineScope or RxJava for long-running tasks
+- Use the ViewHolder pattern correctly for RecyclerView
+- Use ViewBinding and avoid findViewById
+- Use ConstraintLayout to create a flat view hierarchy
+
+### Memory Management
+- Avoid situations that cause memory leaks (especially static references in Activity)
+- Prefer using ApplicationContext when Context is required
+- Properly manage and release large objects like Bitmaps
+- Use memory-efficient collections such as SparseArray and ArrayMap
+
+### Battery Optimization
+- Use Location APIs only when necessary
+- Set appropriate intervals for AlarmManager and WorkManager
+- For background services, use JobScheduler or WorkManager
+- Optimize sensor data collection frequency
+
+---
+
+## 4. Security Practices
+
+### Data Security
+- Store critical data using EncryptedSharedPreferences
+- Keep API keys in native code (C/C++) or in BuildConfig
+- Use SSL pinning for network security
+- Avoid logging sensitive information
+
+### Code Security
+- Obfuscate (ProGuard/R8) your code
+- Generate non-debuggable release builds
+- Implement root detection mechanisms
+- Validate in-app purchases securely
+
+---
+
+## 5. Test Strategy
+
+### Unit Tests
+- Write unit tests for each ViewModel
+- Use mocks to write unit tests for Repository classes
+- Write comprehensive tests for critical business logic
+- Use JUnit and Mockito
+
+### UI Tests
+- Write Espresso or UI Automator tests for main user flows
+- Test edge cases like screen rotation
+- Write isolated tests for Fragments
+
+### Integration Tests
+- Test Room database integration with Repository
+- Test API integration (using a mock server)
+
+---
+
+## 6. Database and Data Management
+
+### Room Database
+- Use Room to abstract SQL operations
+- Create comprehensive methods in DAO interfaces
+- Handle database migrations correctly
+- Use relational modeling for complex queries
+
+### SharedPreferences
+- Use enums for key-value pairs
+- Do not store large data sets in SharedPreferences; prefer Room for that
+- Use PreferenceManager or DataStore to maintain data consistency
+
+### Network Operations
+- Use Retrofit and OkHttp
+- Implement logging and caching interceptors for API calls
+- Establish proper error handling strategies for network failures
+- Use Paging 3 for pagination
+
+---
+
+## 7. UI/UX Best Practices
+
+### Material Design
+- Use the Material Components library
+- Organize consistent themes and colors in styles.xml and themes.xml
+- Use Material Motion for animations
+- Set proper content descriptions for accessibility
+
+### Responsive Design
+- Create alternative layouts for different screen sizes
+- Use dp and sp units correctly
+- Add landscape mode support
+- Create customized layouts for tablets
+
+### User Experience
+- Provide feedback to users during operations (loading state, error state)
+- Implement offline mode support
+- Make error messages user-friendly
+- Add dark mode support
+
+---
+
+## 8. Dependency Management
+
+### Gradle Configuration
+- Use a version catalog or buildSrc for dependency management
+- Modify the project-level build.gradle for a modular structure
+- Optimize ProGuard/R8 rules
+- Configure build variants and buildTypes properly
+
+### Library Choices
+- Use Android Architecture Components for lifecycle-aware components
+- Use Glide or Coil for image loading
+- Use Retrofit + OkHttp + Gson/Moshi for networking
+- Use JUnit, Mockito, and Espresso for testing
+
+---
+
+## 9. CI/CD and Deployment
+
+### CI/CD Pipeline
+- Trigger automatic build and test for each commit
+- Run UI tests on Firebase Test Lab
+- Analyze code quality with SonarQube
+- Perform lint checks before release
+
+### Deployment
+- Use the internal test track on Google Play Console
+- Create a Gradle script for automated versioning
+- Generate automatic release notes
+- Use Firebase App Distribution for internal testing
+
+---
+
+## 10. Error Capturing and Logging
+
+### Crash Reporting
+- Integrate Firebase Crashlytics
+- Report critical error conditions
+- Track and optimize ANRs
+- Monitor crash-free user rates
+
+### Logging Strategy
+- Do not log sensitive information in production builds
+- Use log levels correctly (DEBUG, INFO, WARN, ERROR)
+- Use the Timber library for logging
+- Use analytics tools for remote logging
+
+---
+
+## 11. Developer Tools Usage
+
+### Android Studio
+- Create and use Live Templates
+- Learn and use hotkeys
+- Set up the Favorite Actions menu
+- Use Profiler and Memory Monitor to track performance
+
+### Git Usage
+- Follow a feature branch workflow
+- Standardize commit messages
+- Decide on a rebase vs. merge strategy
+- Use Git hooks for pre-commit checks
+
+---
+
+## 12. Motion Sensor-Specific Optimizations
+
+### Sensor Data Processing
+- Use `SensorManager.SENSOR_DELAY_GAME` or `SENSOR_DELAY_UI` (SENSOR_DELAY_FASTEST drains battery quickly)
+- Process sensor data in batches
+- Implement a low-pass filter to reduce sensor noise
+- Use a Kalman filter to stabilize sensor readings
+
+### Motion Sickness Algorithms
+- Optimize algorithms that detect changes in speed
+- Combine gyroscope and accelerometer data
+- Correctly calculate device orientation (use rotation matrices)
+- Calibrate threshold values with user feedback
+
+---
+
+## 13. Screen Filters and Image Processing
+
+### Overlay Optimization
+- Use `WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY`
+- Manage z-index properly for overlays
+- Use hardware acceleration to speed up screen filters
+- Leverage the GPU to maintain performance even at low alpha values
+
+### White Balance and Blue Light Filter
+- Use ColorMatrix manipulation for more efficient filters
+- Increase performance with RenderScript-based filtering
+- Enable automatic day/night filter switching
+- Automatically detect low-light conditions and apply appropriate filters
+
+---
+
+## 14. System Optimization
+
+- When performing any code operation, update, or addition, do not break or remove other functions unless absolutely necessary.  
+- Once you start a process, do not stop or interrupt it until it is complete. If the process, update, or addition cannot be done, specify the reason and explain how to do it manually.  
+- For all code operations, update or add code so that it is optimal for the largest possible user base, meaning the min SDK level. If the requested operation cannot be performed at that specific SDK/API level at all, propose upgrading the SDK/API or any necessary components. If I approve, then perform the required operations.  
+- For backward compatibility, if necessary, adjust and update the code for each Android, API, and SDK level in the relevant activity so that it works seamlessly and optimally on any phone in use.  
+- Always include all necessary libraries in their entirety.  

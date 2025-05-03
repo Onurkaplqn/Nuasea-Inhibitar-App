@@ -73,7 +73,7 @@ public class SignInActivity extends AppCompatActivity {
         firebaseAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        startActivity(new Intent(this, MainActivity.class));
+                        startActivity(new Intent(this, HomeActivity.class));
                         finish();
                     } else {
                         Toast.makeText(this, "Giriş başarısız: " + task.getException().getMessage(),
@@ -108,11 +108,11 @@ public class SignInActivity extends AppCompatActivity {
         firebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        startActivity(new Intent(this, MainActivity.class));
+                        startActivity(new Intent(this, HomeActivity.class));
                         finish();
                     } else {
-                        Toast.makeText(this, "Kimlik doğrulama başarısız: " + 
-                                task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Kimlik doğrulama başarısız: " + task.getException().getMessage(),
+                                Toast.LENGTH_SHORT).show();
                     }
                 });
     }

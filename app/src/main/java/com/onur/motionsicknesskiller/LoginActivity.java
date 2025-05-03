@@ -38,7 +38,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onStart();
         // Zaten giriş yapılmış mı kontrol et
         if (firebaseAuth.getCurrentUser() != null) {
-            startActivity(new Intent(this, MainActivity.class));
+            // MainActivity yerine HomeActivity'ye yönlendir
+            startActivity(new Intent(this, HomeActivity.class));
             finish();
         }
     }

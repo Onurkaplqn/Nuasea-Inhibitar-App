@@ -1,225 +1,413 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_purple_light"
     tools:context=".MainActivity">
 
-    <!-- Motion Visualizer View -->
+    <!-- Motion Visualizer View (Arka planda kalsın) -->
     <com.onur.motionsicknesskiller.motion.MotionVisualizerView
         android:id="@+id/motion_visualizer"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <!-- Üst Bar -->
-    <RelativeLayout
-        android:id="@+id/top_bar"
+    <!-- AppBar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:background="@android:color/transparent"
+        app:elevation="0dp">
 
-        <!-- Sol taraftaki hesap ikonu -->
-        <ImageView
-            android:id="@+id/account_image"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:background="@drawable/circle_background"
-            android:padding="8dp"
-            android:src="@drawable/ic_account"
-            android:clickable="true"
-            android:focusable="true" />
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@android:color/transparent">
 
-    </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-    <!-- Karşılama Mesajı -->
-    <TextView
-        android:id="@+id/welcome_message"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/top_bar"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
-        android:text="Hey 👋"
-        android:textColor="@color/text_dark"
-        android:textSize="24sp"
-        android:textStyle="bold" />
+                <!-- Sol taraftaki hesap ikonu -->
+                <ImageView
+                    android:id="@+id/account_image"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/circle_background"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_account"
+                    android:clickable="true"
+                    android:focusable="true" />
 
-    <!-- Ana İşlevler Bölümü -->
-    <RelativeLayout
-        android:id="@+id/main_functions"
+                <!-- Sağ taraftaki ayarlar ikonu -->
+                <ImageView
+                    android:id="@+id/icon_settings"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/circle_background"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_settings"
+                    android:clickable="true"
+                    android:focusable="true" />
+            </RelativeLayout>
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/welcome_message"
-        android:layout_marginTop="24dp"
-        android:padding="16dp">
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- Dinamik Yenileme Switch -->
-        <Switch
-            android:id="@+id/switch_dynamic_refresh"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/switch_background"
-            android:padding="16dp"
-            android:text="Dinamik Yenileme"
-            android:textColor="@color/text_dark"
-            android:textSize="16sp" />
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp">
 
-        <!-- Slider ve FPS Text -->
-        <com.google.android.material.slider.Slider
-            android:id="@+id/refresh_rate_slider"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/switch_dynamic_refresh"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:visibility="gone" />
+            <!-- Karşılama Mesajı -->
+            <TextView
+                android:id="@+id/welcome_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Merhaba 👋"
+                android:textColor="@color/text_dark"
+                android:textSize="28sp"
+                android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/refresh_rate_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/refresh_rate_slider"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="4dp"
-            android:text="60 FPS"
-            android:textColor="@color/text_dark"
-            android:textStyle="bold"
-            android:textSize="16sp"
-            android:visibility="gone" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Hareket rahatsızlığını azaltmak için ayarları özelleştirin"
+                android:textColor="@color/text_dark"
+                android:textSize="16sp"
+                android:alpha="0.7" />
 
-        <!-- Gece Modu Switch -->
-        <Switch
-            android:id="@+id/switch_night_mode"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/refresh_rate_text"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/switch_background"
-            android:padding="16dp"
-            android:text="Gece Modu"
-            android:textColor="@color/text_dark"
-            android:textSize="16sp" />
+            <!-- Ana İşlevler Bölümü -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp">
 
-        <!-- Gece Modu Slider -->
-        <com.google.android.material.slider.Slider
-            android:id="@+id/night_mode_slider"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/switch_night_mode"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:visibility="gone"
-            android:theme="@style/CustomSliderStyle" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-        <!-- Parlaklık Switch -->
-        <Switch
-            android:id="@+id/switch_brightness"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/night_mode_slider"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/switch_background"
-            android:padding="16dp"
-            android:text="Parlaklık"
-            android:textColor="@color/text_dark"
-            android:textSize="16sp" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
 
-        <!-- Parlaklık Slider -->
-        <com.google.android.material.slider.Slider
-            android:id="@+id/beyazDengeSeekBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/switch_brightness"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:visibility="gone" />
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_refresh_rate"
+                            android:tint="@color/colorPrimary" />
 
-        <!-- Motion Visualizer Switch -->
-        <Switch
-            android:id="@+id/switch_motion_visualizer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/beyazDengeSeekBar"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/switch_background"
-            android:padding="16dp"
-            android:text="Hareket Görselleştirici"
-            android:textColor="@color/text_dark"
-            android:textSize="16sp" />
-    </RelativeLayout>
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="12dp"
+                            android:text="Dinamik Yenileme"
+                            android:textColor="@color/text_dark"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
 
-    <!-- İzin Bilgisi ve Buton -->
-    <TextView
-        android:id="@+id/text_permission_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/main_functions"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
-        android:text="İzin Bilgisi"
-        android:textColor="@color/text_dark" />
+                        <Switch
+                            android:id="@+id/switch_dynamic_refresh"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
 
-    <Button
-        android:id="@+id/button_request_permissions"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/text_permission_info"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="8dp"
-        android:text="İzinleri İste" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="44dp"
+                        android:layout_marginTop="4dp"
+                        android:text="Ekran yenileme hızını düşürerek hareket kaynaklı rahatsızlığı azaltır"
+                        android:textColor="@color/text_dark"
+                        android:textSize="14sp"
+                        android:alpha="0.7" />
+
+                    <!-- Slider ve FPS Text -->
+                    <com.google.android.material.slider.Slider
+                        android:id="@+id/refresh_rate_slider"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="44dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="8dp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/refresh_rate_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:layout_marginEnd="16dp"
+                        android:text="60 FPS"
+                        android:textColor="@color/colorPrimary"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:visibility="gone" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Gece Modu Kartı -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_night_mode"
+                            android:tint="@color/colorPrimary" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="12dp"
+                            android:text="Gece Modu"
+                            android:textColor="@color/text_dark"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <Switch
+                            android:id="@+id/switch_night_mode"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="44dp"
+                        android:layout_marginTop="4dp"
+                        android:text="Gri tonlama ile ekran kontrastını azaltarak göz yorgunluğunu hafifletir"
+                        android:textColor="@color/text_dark"
+                        android:textSize="14sp"
+                        android:alpha="0.7" />
+
+                    <!-- Gece Modu Slider -->
+                    <com.google.android.material.slider.Slider
+                        android:id="@+id/night_mode_slider"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="44dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="8dp"
+                        android:visibility="gone"
+                        android:theme="@style/CustomSliderStyle" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Mavi Işık Filtresi Kartı -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_brightness"
+                            android:tint="@color/colorPrimary" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="12dp"
+                            android:text="Mavi Işık Filtresi"
+                            android:textColor="@color/text_dark"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <Switch
+                            android:id="@+id/switch_brightness"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="44dp"
+                        android:layout_marginTop="4dp"
+                        android:text="Mavi ışığı filtreler, göz yorgunluğunu azaltır ve uyku kalitesini artırır"
+                        android:textColor="@color/text_dark"
+                        android:textSize="14sp"
+                        android:alpha="0.7" />
+
+                    <!-- Mavi Işık Filtresi Slider -->
+                    <com.google.android.material.slider.Slider
+                        android:id="@+id/beyazDengeSeekBar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="44dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="8dp"
+                        android:visibility="gone" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Hareket Görselleştirici Kartı -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_motion_visualizer"
+                            android:tint="@color/colorPrimary" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="12dp"
+                            android:text="Hareket Görselleştirici"
+                            android:textColor="@color/text_dark"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <Switch
+                            android:id="@+id/switch_motion_visualizer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="44dp"
+                        android:layout_marginTop="4dp"
+                        android:text="Hareket sensörlerini kullanarak ekrandaki hareketi görselleştirir"
+                        android:textColor="@color/text_dark"
+                        android:textSize="14sp"
+                        android:alpha="0.7" />
+
+                    <com.google.android.material.chip.Chip
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="44dp"
+                        android:layout_marginTop="8dp"
+                        android:text="YENİ ÖZELLİK"
+                        android:textSize="10sp"
+                        android:textColor="@color/white"
+                        app:chipBackgroundColor="@color/colorPrimary" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- İpucu Kartı -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="#F0F0FF"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_settings"
+                        android:tint="@color/colorPrimary" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:text="Daha fazla ayar için sağ üstteki ayarlar simgesine dokunun veya ekranın alt kısmındaki menüden 'Hareket Kontrolü' ekranına gidin."
+                        android:textColor="@color/text_dark"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
     <!-- Alt Menü -->
-    <LinearLayout
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
         android:background="@color/white"
-        android:elevation="8dp"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="16dp">
+        app:elevation="8dp"
+        app:menu="@menu/bottom_menu" />
 
-        <ImageView
-            android:id="@+id/icon_home"
-            android:layout_width="0dp"
-            android:layout_height="24dp"
-            android:layout_weight="1"
-            android:src="@drawable/home" />
-
-        <ImageView
-            android:id="@+id/icon_settings"
-            android:layout_width="0dp"
-            android:layout_height="32dp"
-            android:layout_weight="1"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ss"
-            android:clickable="true"
-            android:focusable="true"
-            android:contentDescription="Buy Me a Coffee" />
-
-        <ImageView
-            android:id="@+id/icon_profile"
-            android:layout_width="0dp"
-            android:layout_height="24dp"
-            android:layout_weight="1"
-            android:src="@drawable/reference" />
-    </LinearLayout>
-
-</RelativeLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

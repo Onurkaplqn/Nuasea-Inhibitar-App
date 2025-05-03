@@ -84,7 +84,7 @@ public class RegisterActivity extends AppCompatActivity {
                         firebaseAuth.getCurrentUser().updateProfile(profileUpdates)
                                 .addOnCompleteListener(profileTask -> {
                                     if (profileTask.isSuccessful()) {
-                                        startActivity(new Intent(this, MainActivity.class));
+                                        startActivity(new Intent(this, HomeActivity.class));
                                         finish();
                                     }
                                 });
@@ -121,7 +121,7 @@ public class RegisterActivity extends AppCompatActivity {
         firebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        startActivity(new Intent(this, MainActivity.class));
+                        startActivity(new Intent(this, HomeActivity.class));
                         finish();
                     } else {
                         Toast.makeText(this, "Kimlik doğrulama başarısız: " + 

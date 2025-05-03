@@ -32,7 +32,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.RequiresApi;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -41,6 +41,7 @@ import com.google.android.material.slider.Slider;
 import com.onur.motionsicknesskiller.motion.MotionSensorManager;
 import com.onur.motionsicknesskiller.motion.MotionVisualizerView;
 import com.onur.motionsicknesskiller.motion.MotionOverlayService;
+import com.onur.motionsicknesskiller.RelaxationActivity;
 
 import java.util.List;
 
@@ -54,26 +55,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Switch switchBrightness;
     private SensorManager sensorManager;
     private Sensor lightSensor;
-    private View overlayView;
-    private boolean isOverlayViewAttached = false;
     private boolean isBlueLightFilterActive = false;
-    private int currentAlpha = 0;
     private float maxRefreshRate = 60f;
     private float minRefreshRate = 30f;
 
     private Slider beyazDengeSeekBar;
-    private TextView textPermissionInfo;
-    private Button buttonRequestPermissions;
 
     // Motion özellikleri için yeni değişkenler
     private MotionSensorManager motionSensorManager;
     private MotionVisualizerView motionVisualizerView;
     private Switch switchMotionVisualizer;
 
+    // Erişilebilirlik servisi sınıf adı
+    private static final String ACCESSIBILITY_SERVICE_CLASS = "MyAccessibilityService";
     private static final String CHANNEL_ID = "motion_sickness_channel";
-    private static final int SYSTEM_ALERT_WINDOW_PERMISSION_REQUEST_CODE = 2;
-    private static final int WRITE_SETTINGS_PERMISSION_REQUEST_CODE = 3;
-    private static final int ACCESSIBILITY_PERMISSION_REQUEST_CODE = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         setupRefreshRateControls();
         setupOtherControls();
         setupMotionControls(); // Yeni motion kontrolleri
-        checkPermissions();
+        enableAllControls(); // Tüm kontrolleri etkinleştir
         createNotificationChannel();
         showNotification();
     }
@@ -97,11 +92,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         nightModeSlider = findViewById(R.id.night_mode_slider);
         switchBrightness = findViewById(R.id.switch_brightness);
         beyazDengeSeekBar = findViewById(R.id.beyazDengeSeekBar);
-        textPermissionInfo = findViewById(R.id.text_permission_info);
-        buttonRequestPermissions = findViewById(R.id.button_request_permissions);
 
         // Slider'ları başlat
         setupSliders();
+
+        // Alt menü ayarları
+        setupBottomNavigation();
 
         // Hesap ikonuna tıklama
         ImageView accountIcon = findViewById(R.id.account_image);
@@ -151,6 +147,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             float[] refreshRates = display.getSupportedRefreshRates();
             if (refreshRates != null && refreshRates.length > 0) {
                 maxRefreshRate = refreshRates[refreshRates.length - 1];
+                // En yakın tam sayıya yuvarla
+                maxRefreshRate = Math.round(maxRefreshRate);
             }
         }
 
@@ -158,8 +156,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         refreshRateSlider.setValueFrom(minRefreshRate);
         refreshRateSlider.setValueTo(maxRefreshRate);
         refreshRateSlider.setValue(60f);
+        // Adım boyutunu 1 olarak ayarla ve değerleri tam sayıya yuvarla
         refreshRateSlider.setStepSize(1f);
-        refreshRateSlider.setLabelFormatter(value -> String.format("%.0f FPS", value));
+        refreshRateSlider.setLabelFormatter(value -> String.format("%d FPS", Math.round(value)));
 
         // Switch kontrolü
         switchDynamicRefresh.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -167,19 +166,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             refreshRateText.setVisibility(isChecked ? View.VISIBLE : View.GONE);
             
             if (isChecked) {
-                setRefreshRate(refreshRateSlider.getValue());
-                refreshRateText.setText(String.format("%.0f FPS", refreshRateSlider.getValue()));
+                float currentValue = Math.round(refreshRateSlider.getValue());
+                setRefreshRate(currentValue);
+                refreshRateText.setText(String.format("%d FPS", Math.round(currentValue)));
             } else {
-                setRefreshRate(maxRefreshRate); // Varsayılan değere dön
-                refreshRateText.setText(String.format("%.0f FPS", maxRefreshRate));
+                setRefreshRate(maxRefreshRate);
+                refreshRateText.setText(String.format("%d FPS", Math.round(maxRefreshRate)));
             }
         });
 
         // Slider değişim kontrolü
         refreshRateSlider.addOnChangeListener((slider, value, fromUser) -> {
             if (fromUser) {
-                setRefreshRate(value);
-                refreshRateText.setText(String.format("%.0f FPS", value));
+                float roundedValue = Math.round(value);
+                setRefreshRate(roundedValue);
+                refreshRateText.setText(String.format("%d FPS", Math.round(roundedValue)));
             }
         });
     }
@@ -191,334 +192,395 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             getWindow().setAttributes(layoutParams);
             
             // Kullanıcıya görsel feedback
-            refreshRateText.setText(String.format("%.0f FPS", refreshRate));
-            Toast.makeText(this, String.format("Yenileme hızı %.0f FPS olarak ayarlandı", refreshRate), Toast.LENGTH_SHORT).show();
+            refreshRateText.setText(String.format("%d FPS", Math.round(refreshRate)));
+            Toast.makeText(this, String.format("Yenileme hızı %d FPS olarak ayarlandı", Math.round(refreshRate)), Toast.LENGTH_SHORT).show();
         }
     }
 
     private void setupOtherControls() {
-        switchNightMode.setEnabled(false);
-        switchBrightness.setEnabled(false);
-        beyazDengeSeekBar.setEnabled(false);
+        // Gece Modu ayarlarını yükle
+        SharedPreferences grayscalePrefs = getSharedPreferences("GrayscalePrefs", MODE_PRIVATE);
+        boolean isGrayscaleActive = grayscalePrefs.getBoolean("isGrayscaleActive", false);
+        float grayscaleIntensity = grayscalePrefs.getFloat("grayscaleIntensity", 0.0f);
 
+        // Gece Modu Switch ve Slider durumunu ayarla
+        switchNightMode.setChecked(isGrayscaleActive);
+        nightModeSlider.setVisibility(isGrayscaleActive ? View.VISIBLE : View.GONE);
+        
+        // Slider değerlerini tam sayı olarak ayarla ve sınırlar içinde tut
+        nightModeSlider.setValueFrom(0);
+        nightModeSlider.setValueTo(100);
+        float sliderValue = Math.max(0, Math.min(100, Math.round(100 - (grayscaleIntensity * 100f / 1.5f))));
+        nightModeSlider.setValue(sliderValue);
+        nightModeSlider.setStepSize(1);
+        nightModeSlider.setLabelFormatter(value -> String.format("%d%%", Math.round(value)));
+
+        // Parlaklık ayarlarını yükle
         SharedPreferences sharedPreferences = getSharedPreferences("BlueLightFilterPrefs", MODE_PRIVATE);
         isBlueLightFilterActive = sharedPreferences.getBoolean("BlueLightFilterActive", false);
         switchBrightness.setChecked(isBlueLightFilterActive);
 
-        // Gece Modu Slider ayarları
-        nightModeSlider.setValueFrom(0);
-        nightModeSlider.setValueTo(100);
-        nightModeSlider.setValue(sharedPreferences.getInt("NightModeIntensity", 50));
-        nightModeSlider.setStepSize(1);
-        nightModeSlider.setLabelFormatter(value -> String.format("%.0f%%", value));
-
         // Parlaklık Slider ayarları
         beyazDengeSeekBar.setValueFrom(0);
         beyazDengeSeekBar.setValueTo(100);
-        beyazDengeSeekBar.setValue(sharedPreferences.getInt("SeekBarValue", 50));
+        beyazDengeSeekBar.setValue(Math.round(sharedPreferences.getInt("SeekBarValue", 50)));
         beyazDengeSeekBar.setStepSize(1);
-        beyazDengeSeekBar.setLabelFormatter(value -> String.format("%.0f%%", value));
+        beyazDengeSeekBar.setLabelFormatter(value -> String.format("%d%%", Math.round(value)));
 
         // Gece Modu Switch kontrolü
         switchNightMode.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (!buttonView.isPressed()) return;
 
+            // İzin kontrolü
+            if (isChecked && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+                Toast.makeText(this, "Gece modu için ekran üzerine çizim izni vermeniz gerekiyor", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + getPackageName()));
+                startActivity(intent);
+                switchNightMode.setChecked(false);
+                return;
+            }
+
             nightModeSlider.setVisibility(isChecked ? View.VISIBLE : View.GONE);
             nightModeSlider.setEnabled(isChecked);
 
-            Intent serviceIntent = new Intent(this, GrayscaleService.class);
+            Intent serviceIntent = new Intent(this, UnifiedOverlayService.class);
             if (isChecked) {
-                if (GrayscaleService.isRunning()) {
-                    serviceIntent.setAction("STOP_GRAYSCALE");
-                    stopService(serviceIntent);
-                }
+                // Slider değerini 0.1-1.5 arasına doğrusal olarak normalize et
+                // 100 = minimum karartma (0.1), 0 = maksimum karartma (1.5)
+                float normalizedValue = 1.5f - (nightModeSlider.getValue() / 100f * 1.4f);
                 
-                serviceIntent.setAction("START_GRAYSCALE");
-                serviceIntent.putExtra("intensity", nightModeSlider.getValue() / 100f);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    startForegroundService(serviceIntent);
-                } else {
-                    startService(serviceIntent);
+                serviceIntent.setAction("START_NIGHT_MODE");
+                serviceIntent.putExtra("intensity", normalizedValue);
+                try {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        startForegroundService(serviceIntent);
+                    } else {
+                        startService(serviceIntent);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, "Gece modu başlatılamadı: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             } else {
-                serviceIntent.setAction("STOP_GRAYSCALE");
-                stopService(serviceIntent);
+                serviceIntent.setAction("STOP_NIGHT_MODE");
+                try {
+                    startService(serviceIntent);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-        });
 
-        // Gece Modu Slider değişim kontrolü
-        nightModeSlider.addOnChangeListener((slider, value, fromUser) -> {
-            if (GrayscaleService.isRunning()) {
-                Intent serviceIntent = new Intent(this, GrayscaleService.class);
-                serviceIntent.setAction("UPDATE_INTENSITY");
-                serviceIntent.putExtra("intensity", value / 100f);
-                startService(serviceIntent);
-
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putInt("NightModeIntensity", (int) value);
-                editor.apply();
-            }
-        });
-
-        // Parlaklık Switch kontrolü
-        switchBrightness.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            beyazDengeSeekBar.setEnabled(isChecked);
-            beyazDengeSeekBar.setVisibility(isChecked ? View.VISIBLE : View.GONE);
-            if (isChecked) {
-                isBlueLightFilterActive = true;
-                createOverlayView();
-            } else {
-                isBlueLightFilterActive = false;
-                removeOverlayView();
-            }
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean("BlueLightFilterActive", isBlueLightFilterActive);
+            // Ayarları kaydet
+            SharedPreferences.Editor editor = getSharedPreferences("GrayscalePrefs", MODE_PRIVATE).edit();
+            editor.putBoolean("isGrayscaleActive", isChecked);
+            editor.putFloat("grayscaleIntensity", 0.2f); // Başlangıç karartma değerini kaydet
             editor.apply();
         });
 
-        // Parlaklık Slider değişim kontrolü
-        beyazDengeSeekBar.addOnChangeListener((slider, value, fromUser) -> {
-            if (isBlueLightFilterActive) {
-                currentAlpha = (int) (255 * (1 - value / 100));
-                overlayView.setBackgroundColor(Color.argb(currentAlpha, 255, 100, 0));
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putInt("SeekBarValue", (int) value);
-                editor.apply();
-            }
-        });
+    // Gece Modu Slider değişim kontrolü
+    nightModeSlider.addOnChangeListener((slider, value, fromUser) -> {
+        if (UnifiedOverlayService.isNightModeActive()) {
+            // Slider değerini 0.1-1.5 arasına doğrusal olarak normalize et
+            // 100 = minimum karartma (0.1), 0 = maksimum karartma (1.5)
+            float normalizedValue = 1.5f - (value / 100f * 1.4f);
+            
+            Intent serviceIntent = new Intent(this, UnifiedOverlayService.class);
+            serviceIntent.setAction("UPDATE_NIGHT_MODE");
+            serviceIntent.putExtra("intensity", normalizedValue);
+            startService(serviceIntent);
 
-        buttonRequestPermissions.setOnClickListener(v -> requestPermissionsManually());
+            // Ayarları kaydet
+            SharedPreferences.Editor editor = getSharedPreferences("GrayscalePrefs", MODE_PRIVATE).edit();
+            editor.putFloat("grayscaleIntensity", normalizedValue);
+            editor.apply();
 
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+            // Kullanıcıya görsel feedback
+            int karartmaYuzdesi = (int)((1.5f - normalizedValue) * 100f / 1.4f);
+            Toast.makeText(this, String.format("Karartma: %%%d", karartmaYuzdesi), 
+                Toast.LENGTH_SHORT).show();
+        }
+    });
 
-        overlayView = new View(this);
-        overlayView.setBackgroundColor(Color.TRANSPARENT);
-    }
+    // Parlaklık Switch kontrolü
+    switchBrightness.setOnCheckedChangeListener((buttonView, isChecked) -> {
+        if (!buttonView.isPressed()) return;
 
-    private void setupMotionControls() {
-        motionSensorManager = new MotionSensorManager(this, this);
+        // İzin kontrolü
+        if (isChecked && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+            Toast.makeText(this, "Mavi ışık filtresi için ekran üzerine çizim izni vermeniz gerekiyor", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:" + getPackageName()));
+            startActivity(intent);
+            switchBrightness.setChecked(false);
+            return;
+        }
 
-        switchMotionVisualizer.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            Intent serviceIntent = new Intent(this, MotionOverlayService.class);
-            if (isChecked) {
+        beyazDengeSeekBar.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+        beyazDengeSeekBar.setEnabled(isChecked);
+
+        Intent serviceIntent = new Intent(this, UnifiedOverlayService.class);
+        if (isChecked) {
+            isBlueLightFilterActive = true;
+            int alpha = (int) (255 * (1 - 50 / 100f)); // Başlangıç değeri %50
+            
+            serviceIntent.setAction("START_BLUE_LIGHT_FILTER");
+            serviceIntent.putExtra("alpha", alpha);
+            try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     startForegroundService(serviceIntent);
                 } else {
                     startService(serviceIntent);
                 }
-                motionVisualizerView.setVisibility(View.GONE); // Ana aktivitedeki view'ı gizle
-            } else {
-                stopService(serviceIntent);
-            }
-        });
-    }
-
-    @Override
-    public void onMotionDataChanged(float[] acceleration, float[] rotation) {
-        if (motionVisualizerView != null) {
-            motionVisualizerView.updateMotionData(acceleration, rotation);
-        }
-    }
-
-    private void requestPermissionsManually() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!Settings.canDrawOverlays(this)) {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
-                startActivityForResult(intent, SYSTEM_ALERT_WINDOW_PERMISSION_REQUEST_CODE);
-            }
-
-            if (!Settings.System.canWrite(this)) {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:" + getPackageName()));
-                startActivityForResult(intent, WRITE_SETTINGS_PERMISSION_REQUEST_CODE);
-            }
-
-            if (!isAccessibilityServiceEnabled()) {
-                Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
-                startActivityForResult(intent, ACCESSIBILITY_PERMISSION_REQUEST_CODE);
-            }
-        }
-    }
-
-    private boolean isAccessibilityServiceEnabled() {
-        AccessibilityManager am = (AccessibilityManager) getSystemService(ACCESSIBILITY_SERVICE);
-        List<AccessibilityServiceInfo> enabledServices = am.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK);
-        for (AccessibilityServiceInfo service : enabledServices) {
-            if (service.getId().equals(getPackageName() + "/.MyAccessibilityService")) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void checkPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            boolean hasOverlayPermission = Settings.canDrawOverlays(this);
-            boolean hasWritePermission = Settings.System.canWrite(this);
-            boolean hasAccessibilityPermission = isAccessibilityServiceEnabled();
-            boolean hasNotificationPermission = true;
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                hasNotificationPermission = checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED;
-            }
-
-            if (hasOverlayPermission && hasWritePermission && hasAccessibilityPermission && hasNotificationPermission) {
-                textPermissionInfo.setVisibility(View.GONE);
-                buttonRequestPermissions.setVisibility(View.GONE);
-                switchDynamicRefresh.setEnabled(true);
-                switchNightMode.setEnabled(true);
-                switchBrightness.setEnabled(true);
-                beyazDengeSeekBar.setEnabled(switchBrightness.isChecked());
-            } else {
-                textPermissionInfo.setVisibility(View.VISIBLE);
-                buttonRequestPermissions.setVisibility(View.VISIBLE);
-                switchDynamicRefresh.setEnabled(false);
-                switchNightMode.setEnabled(false);
-                switchBrightness.setEnabled(false);
-                beyazDengeSeekBar.setEnabled(false);
-            }
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // Artık servisi kullandığımız için buradaki sensör başlatmaya gerek yok
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        // Artık servisi kullandığımız için buradaki sensör durdurmaya gerek yok
-    }
-
-    private void createOverlayView() {
-        if (isOverlayViewAttached) {
-            return;
-        }
-
-        overlayView = new View(this);
-        overlayView.setBackgroundColor(Color.argb(100, 255, 100, 0));  // Transparan turuncu
-
-        WindowManager windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-        WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,  // Tüm ekran için overlay
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                PixelFormat.TRANSLUCENT
-        );
-
-        try {
-            windowManager.addView(overlayView, params);
-            isOverlayViewAttached = true;
-        } catch (WindowManager.BadTokenException e) {
-            Toast.makeText(this, "Overlay eklenemedi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void removeOverlayView() {
-        if (isOverlayViewAttached && overlayView.getParent() != null) {
-            WindowManager windowManager = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
-            windowManager.removeView(overlayView);
-            isOverlayViewAttached = false;
-        }
-    }
-
-    private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "Motion Sickness Channel";
-            String description = "Channel for motion sickness notifications";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
-
-    private void showNotification() {
-        // Ana aktiviteye doğrudan intent oluştur
-        Intent mainIntent = new Intent(this, MainActivity.class);
-        mainIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent mainPendingIntent = PendingIntent.getActivity(this, 0, mainIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-
-        // Parlaklık ayarları için doğrudan intent
-        Intent brightnessIntent = new Intent(Settings.ACTION_DISPLAY_SETTINGS);
-        PendingIntent brightnessPendingIntent = PendingIntent.getActivity(this, 1, brightnessIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_settings)
-                .setContentTitle("Motion Sickness Killer")
-                .setContentText("Ayarları düzenlemek için dokunun")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setContentIntent(mainPendingIntent)
-                .addAction(R.drawable.ic_brightness, "Parlaklık Ayarları", brightnessPendingIntent);
-
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 1);
-            } else {
-                notificationManager.notify(1, builder.build());
+                // Slider'ı %50 değerinde göster (orta seviye)
+                beyazDengeSeekBar.setValue(50);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Mavi ışık filtresi başlatılamadı: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                isBlueLightFilterActive = false;
             }
         } else {
-            notificationManager.notify(1, builder.build());
+            isBlueLightFilterActive = false;
+            serviceIntent.setAction("STOP_BLUE_LIGHT_FILTER");
+            try {
+                startService(serviceIntent);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-    }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == SYSTEM_ALERT_WINDOW_PERMISSION_REQUEST_CODE) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (Settings.canDrawOverlays(this)) {
-                    Toast.makeText(this, "Diğer uygulamaların üstüne çizim izni verildi.", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "Diğer uygulamaların üstüne çizim izni verilmedi.", Toast.LENGTH_SHORT).show();
-                }
-            }
-        } else if (requestCode == WRITE_SETTINGS_PERMISSION_REQUEST_CODE) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (Settings.System.canWrite(this)) {
-                    Toast.makeText(this, "Sistem ayarları yazma izni verildi.", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "Sistem ayarları yazma izni verilmedi.", Toast.LENGTH_SHORT).show();
-                }
-            }
-        } else if (requestCode == ACCESSIBILITY_PERMISSION_REQUEST_CODE) {
-            if (isAccessibilityServiceEnabled()) {
-                Toast.makeText(this, "Erişilebilirlik hizmeti izni verildi.", Toast.LENGTH_SHORT).show();
+        // Ayarları kaydet
+        SharedPreferences.Editor editor = getSharedPreferences("BlueLightFilterPrefs", MODE_PRIVATE).edit();
+        editor.putBoolean("BlueLightFilterActive", isBlueLightFilterActive);
+        editor.putInt("SeekBarValue", 50); // Varsayılan değer
+        editor.apply();
+    });
+
+    // Parlaklık Slider değişim kontrolü
+    beyazDengeSeekBar.addOnChangeListener((slider, value, fromUser) -> {
+        if (isBlueLightFilterActive) {
+            int roundedValue = Math.round(value);
+            int alpha = (int) (255 * (1 - roundedValue / 100f));
+            
+            Intent serviceIntent = new Intent(this, UnifiedOverlayService.class);
+            serviceIntent.setAction("UPDATE_BLUE_LIGHT_FILTER");
+            serviceIntent.putExtra("alpha", alpha);
+            startService(serviceIntent);
+
+            // Ayarları kaydet
+            SharedPreferences.Editor editor = getSharedPreferences("BlueLightFilterPrefs", MODE_PRIVATE).edit();
+            editor.putInt("SeekBarValue", roundedValue);
+            editor.apply();
+
+            // Kullanıcıya görsel feedback
+            Toast.makeText(this, String.format("Parlaklık: %%%d", roundedValue), 
+                Toast.LENGTH_SHORT).show();
+        }
+    });
+
+    sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+    lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+}
+
+private void setupMotionControls() {
+    motionSensorManager = new MotionSensorManager(this, this);
+
+    switchMotionVisualizer.setOnCheckedChangeListener((buttonView, isChecked) -> {
+        Intent serviceIntent = new Intent(this, MotionOverlayService.class);
+        if (isChecked) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(serviceIntent);
             } else {
-                Toast.makeText(this, "Erişilebilirlik hizmeti izni verilmedi.", Toast.LENGTH_SHORT).show();
+                startService(serviceIntent);
             }
-        }
-
-        checkPermissions();
-    }
-
-    @Override
-    public void onSensorChanged(SensorEvent event) {}
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {}
-
-    public View getOverlayView() {
-        return overlayView;
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        // Activity kapatılırken servisi de durdur
-        if (GrayscaleService.isRunning()) {
-            Intent serviceIntent = new Intent(this, GrayscaleService.class);
-            serviceIntent.setAction("STOP_GRAYSCALE");
+            motionVisualizerView.setVisibility(View.GONE); // Ana aktivitedeki view'ı gizle
+        } else {
             stopService(serviceIntent);
         }
+    });
+}
+
+@Override
+public void onMotionDataChanged(float[] acceleration, float[] rotation) {
+    if (motionVisualizerView != null) {
+        motionVisualizerView.updateMotionData(acceleration, rotation);
     }
+}
+
+/**
+ * Tüm kontrolleri etkinleştirir. İzin kontrolü olmadığı için doğrudan etkinleştiriyoruz.
+ */
+private void enableAllControls() {
+    switchDynamicRefresh.setEnabled(true);
+    switchNightMode.setEnabled(true);
+    switchBrightness.setEnabled(true);
+    beyazDengeSeekBar.setEnabled(switchBrightness.isChecked());
+}
+
+@Override
+protected void onResume() {
+    super.onResume();
+    
+    // Android 6.0+ için ekran üzerine çizim iznini kontrol et
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+        // İzin yoksa servisleri durdur
+        if (UnifiedOverlayService.isNightModeActive() || UnifiedOverlayService.isBlueLightFilterActive()) {
+            Intent serviceIntent = new Intent(this, UnifiedOverlayService.class);
+            
+            if (UnifiedOverlayService.isNightModeActive()) {
+                serviceIntent.setAction("STOP_NIGHT_MODE");
+                startService(serviceIntent);
+                switchNightMode.setChecked(false);
+            }
+            
+            if (UnifiedOverlayService.isBlueLightFilterActive()) {
+                serviceIntent.setAction("STOP_BLUE_LIGHT_FILTER");
+                startService(serviceIntent);
+                switchBrightness.setChecked(false);
+            }
+            
+            Toast.makeText(this, "Ekran üzerine çizim izni verilmediği için filtreler devre dışı bırakıldı", Toast.LENGTH_LONG).show();
+        }
+    }
+    
+    updateServiceStates();
+}
+
+private void updateServiceStates() {
+    // Gece modu durumunu kontrol et
+    if (UnifiedOverlayService.isNightModeActive()) {
+        switchNightMode.setChecked(true);
+        nightModeSlider.setVisibility(View.VISIBLE);
+        nightModeSlider.setEnabled(true);
+    } else {
+        switchNightMode.setChecked(false);
+        nightModeSlider.setVisibility(View.GONE);
+        nightModeSlider.setEnabled(false);
+    }
+    
+    // Mavi ışık filtresi durumunu kontrol et
+    if (UnifiedOverlayService.isBlueLightFilterActive()) {
+        switchBrightness.setChecked(true);
+        beyazDengeSeekBar.setVisibility(View.VISIBLE);
+        beyazDengeSeekBar.setEnabled(true);
+    } else {
+        switchBrightness.setChecked(false);
+        beyazDengeSeekBar.setVisibility(View.GONE);
+        beyazDengeSeekBar.setEnabled(false);
+    }
+}
+
+@Override
+protected void onPause() {
+    super.onPause();
+    // Uygulama arka plana alındığında overlay flag'lerini güncelle
+    UnifiedOverlayService.onApplicationBackground();
+}
+
+private void createNotificationChannel() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        CharSequence name = "Motion Sickness Channel";
+        String description = "Channel for motion sickness notifications";
+        int importance = NotificationManager.IMPORTANCE_DEFAULT;
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+        channel.setDescription(description);
+        NotificationManager notificationManager = getSystemService(NotificationManager.class);
+        notificationManager.createNotificationChannel(channel);
+    }
+}
+
+private void showNotification() {
+    // Ana aktiviteye doğrudan intent oluştur
+    Intent mainIntent = new Intent(this, MainActivity.class);
+    mainIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    PendingIntent mainPendingIntent = PendingIntent.getActivity(this, 0, mainIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+    // Parlaklık ayarları için doğrudan intent
+    Intent brightnessIntent = new Intent(Settings.ACTION_DISPLAY_SETTINGS);
+    PendingIntent brightnessPendingIntent = PendingIntent.getActivity(this, 1, brightnessIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+    NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_settings)
+            .setContentTitle("Motion Sickness Killer")
+            .setContentText("Ayarları düzenlemek için dokunun")
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContentIntent(mainPendingIntent)
+            .addAction(R.drawable.ic_brightness, "Parlaklık Ayarları", brightnessPendingIntent);
+
+    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+
+    try {
+        notificationManager.notify(1, builder.build());
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
+@Override
+public void onSensorChanged(SensorEvent event) {}
+
+@Override
+public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+
+public View getOverlayView() {
+    return null; // Artık overlay view kullanmıyoruz, servisler yönetiyor
+}
+
+@Override
+protected void onDestroy() {
+    super.onDestroy();
+    // Activity kapatılırken servisleri durdurma
+    Intent serviceIntent = new Intent(this, UnifiedOverlayService.class);
+    if (UnifiedOverlayService.isNightModeActive()) {
+        serviceIntent.setAction("STOP_NIGHT_MODE");
+        startService(serviceIntent);
+    }
+    
+    if (UnifiedOverlayService.isBlueLightFilterActive()) {
+        serviceIntent.setAction("STOP_BLUE_LIGHT_FILTER");
+        startService(serviceIntent);
+    }
+}
+
+@Override
+public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    // İzin kontrolleri kaldırıldı
+}
+
+@Override
+public void onBackPressed() {
+    // Ana ekrana dönmek yerine kart seçme ekranına dön
+    Intent intent = new Intent(this, HomeActivity.class);
+    startActivity(intent);
+    finish();
+}
+
+private void setupBottomNavigation() {
+    com.google.android.material.bottomnavigation.BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+    bottomNavigationView.setOnItemSelectedListener(item -> {
+        int itemId = item.getItemId();
+        if (itemId == R.id.navigation_home) {
+            // Zaten ana sayfadayız
+            return true;
+        } else if (itemId == R.id.navigation_motion_control) {
+            // Motion Control Activity'e git
+            Intent intent = new Intent(this, MotionControlActivity.class);
+            startActivity(intent);
+            return true;
+        } else if (itemId == R.id.navigation_relax) {
+            // Relax Activity'e git
+            Intent intent = new Intent(this, RelaxationActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        return false;
+    });
+    
+    // Ana sayfa seçilmiş olarak ayarla
+    bottomNavigationView.setSelectedItemId(R.id.navigation_home);
+}
 }
 

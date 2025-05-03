@@ -1,5 +1,63 @@
 <resources>
     <string name="app_name">MotionSicknessKiller</string>
-    <string name="accessibility_service_description">Motion Sickness Killer Erişilebilirlik Servisi</string>
+    <string name="accessibility_service_description">Bu servis, araba tutması ve araç tutmasını önlemek için mavi ışık filtresi ve ekran optimizasyonlarını etkinleştirir. Tüm ekran filtresi özelliklerini kullanmak için bu izni vermeniz gerekmektedir.</string>
 
+    <!-- İzin Açıklamaları -->
+    <string name="permission_title_system_overlay">Ekran Üzerine Çizim İzni</string>
+    <string name="permission_desc_system_overlay">Bu izin, mavi ışık filtresi ve gece modu gibi özelliklerin diğer uygulamalar açıkken çalışabilmesi için gereklidir.</string>
+    
+    <string name="permission_title_write_settings">Sistem Ayarları İzni</string>
+    <string name="permission_desc_write_settings">Bu izin, ekran yenileme hızı gibi sistem ayarlarını değiştirmek için gereklidir. Daha düşük yenileme hızı, araç tutmasını azaltmaya yardımcı olur.</string>
+    
+    <string name="permission_title_accessibility">Erişilebilirlik Hizmeti İzni</string>
+    <string name="permission_desc_accessibility">Bu izin, mavi ışık filtresi ve ekranı karartma özellikleri için gereklidir. Bu izin olmadan diğer uygulamalar açıkken ekran filtrelerini kullanamayacaksınız.</string>
+    
+    <string name="permission_title_location">Konum İzni</string>
+    <string name="permission_desc_location">Bu izin, hareket sensörlerinin tam olarak çalışabilmesi için gereklidir. Konum bilginiz başka amaçlarla kullanılmaz veya paylaşılmaz.</string>
+    
+    <string name="permission_title_notification">Bildirim İzni</string>
+    <string name="permission_desc_notification">Bu izin, uygulamanın önemli bilgileri ve güncellemeleri size bildirebilmesi için gereklidir.</string>
+    
+    <string name="permission_guide_system_overlay_m">1. \'Ayarlar\' ekranına yönlendirileceksiniz\n2. \'Motion Sickness Killer\' uygulamasını seçin\n3. \'Diğer uygulamaların üzerinde göster\' seçeneğini etkinleştirin</string>
+    <string name="permission_guide_system_overlay_q">1. \'Ayarlar\' ekranına yönlendirileceksiniz\n2. \'Motion Sickness Killer\' uygulamasını seçin\n3. \'Diğer uygulamaların üzerinde göster\' seçeneğini aktif edin</string>
+    
+    <string name="permission_guide_write_settings">1. \'Ayarlar\' ekranına yönlendirileceksiniz\n2. \'Motion Sickness Killer\' uygulamasını seçin\n3. \'Ayarları değiştirme izni\' seçeneğini etkinleştirin</string>
+    
+    <string name="permission_guide_accessibility">1. \'Erişilebilirlik\' ayarlarına yönlendirileceksiniz\n2. \'İndirilen Uygulamalar\' veya \'Yüklenen Servisler\' bölümüne bakın\n3. \'Motion Sickness Killer\' hizmetini bulun\n4. Hizmeti etkinleştirin ve \'İzin Ver\' seçeneğini onaylayın</string>
+    
+    <string name="permission_guide_location">1. İzin isteği göreceksiniz\n2. \'İzin Ver\' seçeneğini seçin\n3. Hassas konum için \'Daima İzin Ver\' seçeneğini de onaylayın</string>
+    
+    <string name="permission_guide_notification">1. İzin isteği göreceksiniz\n2. \'İzin Ver\' seçeneğini seçin</string>
+
+    <!-- Erişilebilirlik ek açıklamaları -->
+    <string name="accessibility_find_service_title">Erişilebilirlik Servisini Nasıl Bulabilirsiniz</string>
+    <string name="accessibility_find_service_message">Erişilebilirlik sayfasında:\n\n• Cihaz modeline göre servisimizi bulmak için sayfayı aşağı kaydırın.\n• \"İndirilen Uygulamalar\" veya \"Yüklenen Servisler\" bölümüne bakın.\n• \"Motion Sickness Killer\" servisini bulun ve üzerine dokunun.\n• Açılan sayfada servisi etkinleştirin ve onaylayın.\n\nSorun yaşarsanız, ne zaman isterseniz yardım sayfamızdan bize ulaşabilirsiniz.</string>
+    
+    <!-- Xiaomi cihazlar için özel talimatlar -->
+    <string name="xiaomi_accessibility_guide_title">Xiaomi Cihazlarda Erişilebilirlik Ayarı</string>
+    <string name="xiaomi_accessibility_guide_message">Xiaomi/MIUI cihazlar için:\n\n1. Ayarlar > Ek Ayarlar > Erişilebilirlik yolunu izleyin\n2. Eğer \"Motion Sickness Killer\" görünmüyorsa:\n   - \"Yüklenen Uygulamalar\" veya \"Yüklenen Hizmetler\" bölümüne dokunun\n   - \"Daha Fazla Uygulama Göster\" veya \"Tüm Uygulamalar\" seçeneğini arayın\n   - Alfabetik sıralamada \"M\" harfinden sonraki uygulamalara bakın\n\n3. Hala bulamıyorsanız, uygulamamızı aşağıdaki \"Erişilebilirlik Servisi Ara\" butonu ile doğrudan arayabilirsiniz.</string>
+    
+    <!-- Samsung cihazlar için özel talimatlar -->
+    <string name="samsung_accessibility_guide_title">Samsung Cihazlarda Erişilebilirlik Ayarı</string>
+    <string name="samsung_accessibility_guide_message">Samsung/One UI cihazlar için:\n\n1. Ayarlar > Erişilebilirlik > Yüklenen Hizmetler yolunu izleyin\n2. Eğer \"Motion Sickness Killer\" görünmüyorsa:\n   - \"Ek Ayarlar\" veya \"Yüklenen Uygulamalar\" bölümüne dokunun\n   - \"Göster\" düğmesine tıklayarak tüm uygulamaları görüntüleyin\n   - Uygulamamızı bulun ve üzerine dokunun\n\n3. Hala bulamıyorsanız, arama simgesine dokunup \"Motion\" yazarak arayabilirsiniz.</string>
+    
+    <!-- Huawei cihazlar için özel talimatlar -->
+    <string name="huawei_accessibility_guide_title">Huawei Cihazlarda Erişilebilirlik Ayarı</string>
+    <string name="huawei_accessibility_guide_message">Huawei/EMUI cihazlar için:\n\n1. Ayarlar > Erişilebilirlik Özellikleri > İndirilen Hizmetler yolunu izleyin\n2. Eğer \"Motion Sickness Killer\" görünmüyorsa:\n   - \"Daha Fazla İndirilen Hizmet\" seçeneğine dokunun\n   - Listede uygulamamızı bulun ve üzerine dokunun\n\n3. Veya Ayarlar ekranında arama simgesine tıklayıp \"Motion\" yazarak arayabilirsiniz.</string>
+    
+    <!-- Oppo/Realme cihazlar için özel talimatlar -->
+    <string name="oppo_accessibility_guide_title">Oppo/Realme Cihazlarda Erişilebilirlik Ayarı</string>
+    <string name="oppo_accessibility_guide_message">Oppo/Realme/ColorOS cihazlar için:\n\n1. Ayarlar > Ek Ayarlar > Erişilebilirlik > İndirilen Uygulamalar yolunu izleyin\n2. Eğer \"Motion Sickness Killer\" görünmüyorsa:\n   - \"Tüm Uygulamaları Göster\" seçeneğine dokunun\n   - Listede uygulamamızı bulun\n\n3. Ayarlar uygulaması içinde \"Motion\" kelimesini arayarak da uygulamayı bulabilirsiniz.</string>
+    
+    <!-- OnePlus cihazlar için özel talimatlar -->
+    <string name="oneplus_accessibility_guide_title">OnePlus Cihazlarda Erişilebilirlik Ayarı</string>
+    <string name="oneplus_accessibility_guide_message">OnePlus/OxygenOS cihazlar için:\n\n1. Ayarlar > Sistem > Erişilebilirlik > İndirilen Uygulamalar yolunu izleyin\n2. Eğer \"Motion Sickness Killer\" görünmüyorsa:\n   - Tüm uygulamaları görmek için sayfayı aşağı kaydırın\n   - Listede uygulamamızı bulun ve üzerine dokunun\n\n3. Ayarlar uygulamasında arama çubuğunu kullanarak \"Motion\" yazarak arayabilirsiniz.</string>
+    
+    <!-- Vivo cihazlar için özel talimatlar -->
+    <string name="vivo_accessibility_guide_title">Vivo Cihazlarda Erişilebilirlik Ayarı</string>
+    <string name="vivo_accessibility_guide_message">Vivo/FuntouchOS cihazlar için:\n\n1. Ayarlar > Erişilebilirlik > İndirilen Uygulamalar yolunu izleyin\n2. Eğer \"Motion Sickness Killer\" görünmüyorsa:\n   - \"Tüm Uygulamalar\" seçeneğine dokunun\n   - Uygulamamızı bulun ve üzerine dokunun\n\n3. Ayarlar uygulamasında aramak için, \"Motion\" yazarak uygulamamızı bulabilirsiniz.</string>
+    
+    <!-- Genel aramayı teşvik eden mesaj -->
+    <string name="search_in_settings_title">Erişilebilirlik Ayarlarında Arama</string>
+    <string name="search_in_settings_message">Çoğu cihazda Ayarlar uygulamasında arama yapabilirsiniz. Ayarlar ekranının üst kısmındaki arama simgesine dokunun ve \"Motion\" veya \"Motion Sickness Killer\" yazarak uygulamamızı bulabilirsiniz.</string>
 </resources>

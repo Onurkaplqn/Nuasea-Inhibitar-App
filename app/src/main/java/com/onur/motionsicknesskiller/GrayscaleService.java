@@ -77,7 +77,7 @@ public class GrayscaleService extends Service {
                 case "START_GRAYSCALE":
                     if (!isOverlayActive) {
                         startForeground(NOTIFICATION_ID, createNotification());
-                        startGrayscaleEffect(intensity);
+                        createSystemOverlay(intensity);
                     }
                     break;
 
@@ -92,34 +92,73 @@ public class GrayscaleService extends Service {
                     break;
             }
         }
-        return START_NOT_STICKY;
+        return START_STICKY;
     }
 
     /**
      * Siyah-Beyaz (Grayscale) efektini başlatır.
      */
-    private void startGrayscaleEffect(float intensity) {
-        if (isOverlayActive) {
-            return;
-        }
+    private void createSystemOverlay(float intensity) {
+        if (isOverlayActive) return;
 
         overlayView = new View(this);
         
+        int overlayType;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            overlayType = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            overlayType = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
+        } else {
+            overlayType = WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY;
+        }
+
+        // Temel flag'ler - dokunmatik geçirgenliği için FLAG_NOT_TOUCHABLE eklendi
+        int flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
+                   WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL |
+                   WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE |
+                   WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN |
+                   WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS |
+                   WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
+
+        // Cihaz üreticisine göre özel ayarlar
+        String manufacturer = Build.MANUFACTURER.toLowerCase();
+        if (manufacturer.contains("huawei") || manufacturer.contains("honor")) {
+            flags &= ~WindowManager.LayoutParams.FLAG_LAYOUT_IN_OVERSCAN;
+        } else if (manufacturer.contains("oppo") || manufacturer.contains("realme") || 
+                   manufacturer.contains("oneplus") || manufacturer.contains("vivo")) {
+            flags |= WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR |
+                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS |
+                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION |
+                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_OVERSCAN;
+        } else if (manufacturer.contains("samsung")) {
+            flags |= WindowManager.LayoutParams.FLAG_LAYOUT_IN_OVERSCAN |
+                    WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR;
+        } else if (manufacturer.contains("xiaomi") || manufacturer.contains("redmi") || 
+                   manufacturer.contains("poco")) {
+            flags |= WindowManager.LayoutParams.FLAG_LAYOUT_IN_OVERSCAN;
+        }
+
         WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE |
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
-                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS |
-                WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
+                overlayType,
+                flags,
                 PixelFormat.TRANSLUCENT
         );
 
-        // Android 12 ve üzeri için ek ayarlar
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            params.setFitInsetsTypes(0); // Sistem çubuklarını dahil etme
-            params.alpha = 0.99f; // Tam opak olmasını engelle
+        // Z-Index ayarı (daha üstte olması için)
+        params.alpha = 1.0f;
+        params.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE;
+        params.buttonBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE;
+        
+        // Önemli: Yüksek z-order değeri ile diğer pencerelerin üstünde kalmasını sağla
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            params.setFitInsetsTypes(0); // Hiçbir inset'e uymaya çalışma
+        }
+
+        // Çentik/delik desteği
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            params.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
         }
 
         try {
@@ -134,15 +173,15 @@ public class GrayscaleService extends Service {
     }
 
     private void updateGrayscaleIntensity(float intensity) {
-        // Yoğunluğu 0-1 arasında normalize et
-        float normalizedIntensity = intensity;
+        // Yoğunluğu 0.1-1.5 arasında normalize et
+        float normalizedIntensity = Math.max(0.1f, Math.min(1.5f, intensity));
         
-        // Gri tonlama matrisi
+        // Gri tonlama matrisi - doğrusal azalma
         ColorMatrix saturationMatrix = new ColorMatrix();
-        saturationMatrix.setSaturation(1 - normalizedIntensity);
+        saturationMatrix.setSaturation(Math.max(0, 1 - normalizedIntensity)); // Doğrusal gri tonlama
 
-        // Kontrast matrisi
-        float scale = 0.8f + (0.2f * (1 - normalizedIntensity));
+        // Kontrast matrisi - doğrusal azalma
+        float scale = Math.max(0.2f, 1.0f - (normalizedIntensity * 0.5f));
         float[] contrastMatrix = {
             scale, 0, 0, 0, 0,
             0, scale, 0, 0, 0,
@@ -150,13 +189,13 @@ public class GrayscaleService extends Service {
             0, 0, 0, 1, 0
         };
 
-        // Parlaklık matrisi
-        float shift = -20 * normalizedIntensity;
+        // Parlaklık matrisi - doğrusal karartma
+        float shift = -80 * normalizedIntensity; // Daha güçlü ve doğrusal karartma
         float[] brightnessMatrix = {
             1, 0, 0, 0, shift,
             0, 1, 0, 0, shift,
             0, 0, 1, 0, shift,
-            0, 0, 0, 1, 0
+            0, 0, 0, 1, 0 // Sabit alpha değeri
         };
 
         // Matrisleri birleştir
@@ -175,6 +214,8 @@ public class GrayscaleService extends Service {
         // Overlay'e uygula
         if (overlayView != null) {
             overlayView.setBackground(shape);
+            // Alpha değerini doğrusal olarak ayarla
+            overlayView.setAlpha(Math.min(0.95f, normalizedIntensity * 0.6f));
         }
     }
 
@@ -210,10 +251,10 @@ public class GrayscaleService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
                     CHANNEL_ID,
-                    "Siyah-Beyaz Modu",
+                    "Gece Modu",
                     NotificationManager.IMPORTANCE_LOW
             );
-            channel.setDescription("Siyah-beyaz efekt servisi");
+            channel.setDescription("Gece modu servisi");
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             if (notificationManager != null) {
                 notificationManager.createNotificationChannel(channel);
@@ -226,8 +267,8 @@ public class GrayscaleService extends Service {
      */
     private Notification createNotification() {
         return new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("Siyah-Beyaz Modu Aktif")
-                .setContentText("Göz yorgunluğunu azaltmak için siyah-beyaz mod çalışıyor")
+                .setContentTitle("Gece Modu Aktif")
+                .setContentText("Göz yorgunluğunu azaltmak için gece modu çalışıyor")
                 .setSmallIcon(R.drawable.ic_settings)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .build();

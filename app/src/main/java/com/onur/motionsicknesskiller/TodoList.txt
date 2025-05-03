@@ -1,0 +1,81 @@
+# MotionSicknessKiller Uygulaması - Yapılacaklar Listesi
+
+## Öncelikli Görevler
+1. Uygulamaya rahatlatıcı sekmesi eklenecek ve içi doldurulacak
+   - Hareket hastalığını azaltmak için nefes egzersizleri
+   - Göz egzersizleri ve odaklanma teknikleri
+   - Rahatlatıcı sesler ve müzikler
+   - Görsel stabilizasyon teknikleri
+
+2. Premium ve reklam özellikleri eklenecek
+   - Abonelik sistemi kurulacak
+   - Ödeme altyapısı entegre edilecek
+   - Ücretsiz ve premium özellikler ayrılacak
+   - Reklam entegrasyonu yapılacak (AdMob veya alternatif)
+   - Premium kullanıcılar için özel temalar ve ayarlar
+
+3. Uygulama için görsel ve performans iyileştirmeleri yapılacak
+   - Kullanıcı arayüzü modernize edilecek
+   - Animasyonlar optimize edilecek
+   - Pil tüketimi azaltılacak
+   - Başlangıç süresi kısaltılacak
+   - Tema ve renk paleti iyileştirilecek
+
+4. Switch çakışmaları düzeltilecek
+   - Arka planda çalışırken dokunma olayları sorunu çözülecek
+   - Overlay servislerinin dokunma olayları yönetimi iyileştirilecek
+   - Farklı cihazlarda uyumluluk testleri yapılacak
+
+5. Ses karıştırma (Mixer) özelliği yeniden aktifleştirilecek
+   - Şu anda devre dışı bırakılan mixer özelliği optimize edilerek yeniden eklenecek
+   - Bir ana ses ile birden fazla arkaplan sesinin karıştırılabilmesi sağlanacak
+   - Ses seviyelerinin ayrı ayrı ayarlanabilmesi iyileştirilecek
+   - Kullanıcının kendi ses karışımlarını kaydedebilmesi ve paylaşabilmesi özelliği eklenecek
+
+## Ek Öneriler
+4.1. Hareket sensörü optimizasyonu
+   - Sensör verilerinin daha verimli işlenmesi
+   - Düşük pil modunda sensör hassasiyeti ayarı
+   - Kalman filtresi ile sensör verilerinin stabilizasyonu
+
+4.2. Kişiselleştirme seçenekleri
+   - Kullanıcı profilleri oluşturma
+   - Kişiye özel hassasiyet ayarları
+   - Farklı kullanım senaryoları için hazır ayarlar (araba, tekne, uçak vb.)
+
+4.3. Otomatik mod
+   - Hareket tipini otomatik algılama (araç, yürüme, vb.)
+   - Ortam ışığına göre otomatik filtre ayarı
+   - Kullanım alışkanlıklarına göre öğrenen sistem
+
+4.4. Sosyal özellikler
+   - Kullanıcı deneyimlerini paylaşma platformu
+   - Hareket hastalığı yaşayan kişiler için topluluk
+   - İpuçları ve püf noktaları paylaşımı
+
+4.5. Sağlık entegrasyonu
+   - Google Fit / Apple Health entegrasyonu
+   - Sağlık verilerini takip etme
+   - Hareket hastalığı geçmişi ve iyileşme takibi
+
+4.6. Çevrimdışı mod
+   - İnternet olmadan tüm temel özelliklerin çalışması
+   - Çevrimdışı kullanım için içerik indirme seçeneği
+
+4.7. Çoklu dil desteği
+   - Farklı dillerde kullanıcı arayüzü
+   - Yerelleştirilmiş içerik
+
+4.8. Bildirim ve hatırlatıcı sistemi
+   - Uzun süreli kullanımda mola hatırlatıcıları
+   - Düzenli göz dinlendirme önerileri
+   - Kişiselleştirilmiş ipuçları
+
+4.9. Gelişmiş analitik
+   - Kullanım istatistikleri
+   - Hangi özelliklerin en çok yardımcı olduğuna dair geri bildirim
+   - A/B testleri için altyapı
+
+4.10. Sesli komut desteği
+   - Eller serbest kullanım için sesli komutlar
+   - Sesli asistan entegrasyonu 

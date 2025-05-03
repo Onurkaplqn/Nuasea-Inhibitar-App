@@ -18,8 +18,6 @@ import java.util.List;
 
 public class MyAccessibilityService extends AccessibilityService {
 
-    private View overlayView;
-    private boolean isOverlayViewAttached = false;
     private static final int SYSTEM_ALERT_WINDOW_PERMISSION_REQUEST_CODE = 1;
     private static final int WRITE_SETTINGS_PERMISSION_REQUEST_CODE = 2;
     private static final int ACCESSIBILITY_PERMISSION_REQUEST_CODE = 3;
@@ -37,42 +35,41 @@ public class MyAccessibilityService extends AccessibilityService {
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
-        // createOverlayView(); // Bu satırı kaldır veya kontrol ekle
-    }
-
-    private void createOverlayView() {
-        if (isOverlayViewAttached) {
-            return;
-        }
-
-        overlayView = new View(this);
-        overlayView.setBackgroundColor(Color.argb(100, 255, 100, 0));  // Transparan turuncu
-
-        WindowManager windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-        WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,  // Tüm ekran için overlay
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                PixelFormat.TRANSLUCENT
-        );
-
-        try {
-            windowManager.addView(overlayView, params);
-            isOverlayViewAttached = true;
-        } catch (WindowManager.BadTokenException e) {
-            Toast.makeText(this, "Overlay eklenemedi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        
+        // Erişilebilirlik servisi yapılandırması
+        AccessibilityServiceInfo info = getServiceInfo();
+        if (info != null) {
+            // Sadece gerekli özellikleri etkinleştir, gereksiz izinler isteme
+            info.eventTypes = AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED | 
+                             AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED;
+            
+            // Bildirim gecikmesini azalt
+            info.notificationTimeout = 50;
+            
+            // Geri bildirim türünü ayarla
+            info.feedbackType = AccessibilityServiceInfo.FEEDBACK_VISUAL;
+            
+            // Pencere içeriğine erişimi etkinleştir (ekran filtreleri için gerekli)
+            info.flags |= AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS;
+            
+            // Erişilebilirlik düğmesini etkinleştir (Android 9+)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                info.flags |= AccessibilityServiceInfo.FLAG_REQUEST_ACCESSIBILITY_BUTTON;
+            }
+            
+            // Yapılandırmayı uygula
+            setServiceInfo(info);
+            
+            // Servis başarıyla başlatıldı
+            Toast.makeText(this, "Motion Sickness Önleyici servis etkinleştirildi", Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (isOverlayViewAttached && overlayView != null) {
-            WindowManager windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-            windowManager.removeView(overlayView);  // Overlay'i kaldırın
-            isOverlayViewAttached = false;
-        }
+        // Servisi durdur
+        stopService(new Intent(this, BlueLightFilterService.class));
     }
 
     private void checkAllPermissions() {
@@ -132,15 +129,25 @@ public class MyAccessibilityService extends AccessibilityService {
         Toast.makeText(this, "Tüm izinler verildi, uygulama başlatılıyor.", Toast.LENGTH_SHORT).show();
 
         // Mavi ışık filtresini etkinleştir
-        if (!isOverlayViewAttached) {
-            createOverlayView();
-        }
+        startBlueLightFilterService();
 
         // Kullanıcıya göz rahatlatma ve mide bulantısı önleme ipuçları göster
         showComfortTips();
 
         // Uygulamanın ana işlevselliğini başlat
         startMainFunctionality();
+    }
+
+    private void startBlueLightFilterService() {
+        Intent serviceIntent = new Intent(this, BlueLightFilterService.class);
+        int alpha = 100; // Varsayılan değer
+        serviceIntent.putExtra("alpha", alpha);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(serviceIntent);
+        } else {
+            startService(serviceIntent);
+        }
+        Toast.makeText(this, "Mavi ışık filtresi etkinleştirildi", Toast.LENGTH_SHORT).show();
     }
 
     private void showComfortTips() {

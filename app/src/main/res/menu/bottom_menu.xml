@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_home"
+        android:icon="@drawable/home"
+        android:title="Ana Sayfa" />
+    
+    <item
+        android:id="@+id/navigation_motion_control"
+        android:icon="@drawable/ic_motion_visualizer"
+        android:title="Hareket Kontrolü" />
+    
+    <item
+        android:id="@+id/navigation_relax"
+        android:icon="@drawable/ic_relax"
+        android:title="Rahatla" />
+</menu> 

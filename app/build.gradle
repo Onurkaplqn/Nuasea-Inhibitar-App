@@ -13,22 +13,64 @@ android {
         targetSdk 34
         versionCode 1
         versionName "1.0"
+        
+        // Multidex desteği ekle
+        multiDexEnabled true
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    
+    // Split APK desteği ekle
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
+            universalApk false
         }
     }
     
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
+        incremental = false
     }
 
     buildFeatures {
         viewBinding true
+    }
+    
+    // PNG'leri WebP'ye dönüştürmek için
+    aaptOptions {
+        cruncherEnabled = false
+        noCompress "mp3", "wav", "ogg", "m4a", "aac", "flac"
+    }
+    
+    dexOptions {
+        javaMaxHeapSize "4g"
+        preDexLibraries true
+        maxProcessCount 8
+    }
+    
+    // Büyük ses dosyaları için optimizasyonlar
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = false
+        }
+        resources {
+            excludes += ['META-INF/LICENSE.txt', 'META-INF/NOTICE.txt']
+        }
     }
 }
 
@@ -36,6 +78,9 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.11.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    
+    // Multidex desteği
+    implementation 'androidx.multidex:multidex:2.0.1'
     
     // Google Play Services
     implementation 'com.google.android.gms:play-services-auth:20.7.0'
@@ -47,7 +92,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth'
     
     // Lottie Animation
-    implementation 'com.airbnb.android:lottie:6.3.0'
+    implementation 'com.airbnb.android:lottie:6.0.0'
 
     // Test bağımlılıkları
     testImplementation 'junit:junit:4.13.2'
